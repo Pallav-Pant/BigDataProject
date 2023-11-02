@@ -1,0 +1,10 @@
+Pallav(11/1):
+    We can use tensorflow & keras for machine-learning using Neural Networks.
+
+    1. The Observation space is discrete 500, so this can be the input layer, 
+    2. Add hidden layers
+    3. Out action space is discrete 6,, this can be the output layer. 
+
+    We decide which action to take based on the outcome with the best probability.
+    We can train this neural network to play the game.
+    How? - IDK? - Use reward system somehow.
