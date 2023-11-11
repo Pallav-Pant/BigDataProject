@@ -1,57 +1,80 @@
-
-# %%
-"""
-Taxi with Reinforcement Learning
-================================
-
-"""
-# Authors: Pallav Pant, Josh Lahr, Shannon Flaherty
-
-# %%
-# Imports and Environments
-import Taxi_Functions as tfunc
+# %% Import Packages
+import Taxi_Functions as tf
 import gymnasium as gym
+from tqdm import tqdm
+from collections import defaultdict
 
-# %%
-# Taxi_Run_Test
-# Checks if the taxi environment runs correctly.
+# %% Defining Hyperparameters for Training
+learning_rate = 0.001
+n_episodes = 1000000
+start_epsilon = 1.0
+epsilon_decay = start_epsilon / (n_episodes / 2) 
+final_epsilon = 0.1
 
-##Render Mode = "human" allows us to see the taxi game being played.
-render_mode = None
-test_env = gym.make("Taxi-v3", render_mode = render_mode)
-
-#Epsisodes: Number of times to run the simulation
-episodes = 10000
-#Bounding Score: The maximum negative score the player can achieve before being reset 
-bound_score = -300
-#Array to collect final scores of players
-outcomes = []
-
-
-for episode in range(episodes):
-    state = test_env.reset()
-    terminated, truncated = False, False
-    score = 0
-    while not (terminated or score < bound_score):
-        action = test_env.action_space.sample()
-        obs, reward, terminated, truncated, info = test_env.step(action)
-        score += reward
-
-    outcomes.append(score)
-#    print("End of Episode\n")
-
-test_env.close()
-# Close the test environment
-
-passper = 0
-for x in outcomes:
-    if(x > bound_score):
-        passper+=1
-
-print(f"{passper/episodes * 100}% chance of completing on random")
-# about 1% with a socre bound of 300
-
-# %%
-# Actual Program Start
+# %% Main
 if __name__ == '__main__':
-    print("Start")
+    env = gym.make("Taxi-v3")
+    agent = tf.Taxi(
+        env,    
+        learning_rate=learning_rate,
+        initial_epsilon=start_epsilon,
+        epsilon_decay=epsilon_decay,
+        final_epsilon=final_epsilon,
+    )
+    
+    env = gym.wrappers.RecordEpisodeStatistics(env, deque_size=n_episodes)
+    for episode in tqdm(range(n_episodes)):
+        obs, _ = env.reset()
+        done = False
+        score = 0
+
+        while not done:
+            action = agent.get_action(env, obs)
+            next_obs, reward, terminated, truncated, _ = env.step(action)
+            score += reward
+
+            agent.update(obs, action, reward, terminated, next_obs)
+
+            done = terminated or truncated
+            obs = next_obs
+        
+        agent.decay_epsilon()
+
+    agent.save('Final_Shit')
+
+    env.close()
+## ====================================================================================== ##
+
+
+
+
+    test_env = gym.make("Taxi-v3", render_mode = None)
+    test_count = 1000
+    outcomes = defaultdict()
+
+    for x in range(test_count):
+        score = 0
+        obs, _ = test_env.reset()
+        done = False
+        while not done:
+            action = agent.act(test_env, obs)
+            next_obs, reward, terminated, truncated, _ = test_env.step(action)
+            score += reward
+
+            done = terminated or truncated
+            obs = next_obs
+    outcomes[x] = score
+    test_env.close()
+
+    avg_test_score = 0
+    for x in outcomes:
+        #print(f"Test {x}: {outcomes[x]}")
+        avg_test_score += outcomes[x]
+
+    avg_test_score/=test_count
+    print(f"Average test score: {avg_test_score}")
+
+
+
+
+
