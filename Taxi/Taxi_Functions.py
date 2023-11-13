@@ -9,10 +9,10 @@ class Taxi:
     def __init__(
             self,
             env: gym.wrappers.time_limit.TimeLimit,
-            learning_rate: float,
-            initial_epsilon: float,
-            epsilon_decay: float,
-            final_epsilon: float,
+            learning_rate: float = 0.01,
+            initial_epsilon: float = 1.0,
+            epsilon_decay: float = 0,
+            final_epsilon: float = 0.1,
             discount_factor: float = 0.95,
     ):
         self.q_values = defaultdict(lambda: np.zeros(env.action_space.n))
@@ -22,8 +22,6 @@ class Taxi:
         self.epsilon = initial_epsilon
         self.epsilon_decay = epsilon_decay
         self.final_epsilon = final_epsilon
-
-        self.training_error = []
 
     def get_action(self,env, obs: int) -> int:
         """
@@ -38,19 +36,9 @@ class Taxi:
         else:
             return int(np.argmax(self.q_values[obs]))
 
-    def act(self,env, obs: int) -> int:
-        """
-        Returns the best action with probability (1 - epsilon)
-        otherwise a random action with probability epsilon to ensure exploration.
-        """
-        # with probability epsilon return a random action to explore the environment
-        if np.random.random() < self.final_epsilon:
-            return env.action_space.sample()
-
-        # with probability (1 - epsilon) act greedily (exploit)
-        else:
-            return int(np.argmax(self.q_values[obs]))
-
+    def get_best_action(self, obs: int) -> int:
+        return int(np.argmax(self.q_values[obs]))
+    
     def update(
         self,
         obs: int,
@@ -68,7 +56,6 @@ class Taxi:
         self.q_values[obs][action] = (
             self.q_values[obs][action] + self.lr * temporal_difference
         )
-        self.training_error.append(temporal_difference)
 
     def decay_epsilon(self):
         self.epsilon = max(self.final_epsilon, self.epsilon - self.epsilon_decay)
@@ -85,12 +72,14 @@ class Taxi:
         with open(file_name+'.json', 'r') as f:
             data = json.load(f)
             for x in data:
-                self.q_values[x] = np.array(data[x])
+                self.q_values[int(x)] = np.array(data[x])
         
            
             
         
-        
+def average(lst):
+    return sum(lst)/len(lst)
+
 
 
 
