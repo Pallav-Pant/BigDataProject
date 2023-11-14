@@ -51,7 +51,9 @@ for x in generations:
     print(f'Generation: {x}\t Average Score: {generation_data[x]}\n')
 
 
-xlabel = 'Episode Ran'
+### Labels and plots
+
+xlabel = 'Generation Number'
 ylabel = 'Average Score'
 plt.xlabel(xlabel)
 plt.ylabel(ylabel)
