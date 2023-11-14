@@ -1,7 +1,8 @@
 # %% Import Packages
 import Taxi_Functions as tf
 import gymnasium as gym
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
+import matplotlib.pyplot as plt
 
 # %% Training Data
 N_TRAIN = 10_000
@@ -14,19 +15,17 @@ env = gym.make('Taxi-v3')
 
 n = 0
 generations = []
-while n < N_TRAIN:
+while n < N_TRAIN+1:
     generations.append(int(n))
     n+= N_TRAIN / N_SAVES
 
-generations.append('Final')
 
 generation_data = defaultdict()
 
 for x in generations:
     agent = tf.Taxi(env=env)
     agent_name = G_NAME+str(x)
-    if (str(x) == 'Final'):
-        agent_name = 'Taxi\Runs\Final'
+    
     agent.load(agent_name)
     outcomes = []
     for i in range(N_RUNS):
@@ -50,3 +49,9 @@ env.close()
 tf.save_data(generation_data, 'Taxi\Taxi_Run_Data')
 for x in generations:
     print(f'Generation: {x}\t Average Score: {generation_data[x]}\n')
+
+
+
+plt.plot(*zip(*sorted(generation_data.items())))
+plt.savefig('Taxi/Taxi_Runs_Data.png')
+plt.show()
