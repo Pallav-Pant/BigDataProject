@@ -1,7 +1,7 @@
 # %% Import Packages
 import Taxi_Functions as tf
 import gymnasium as gym
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 import matplotlib.pyplot as plt
 
 # %% Training Data
