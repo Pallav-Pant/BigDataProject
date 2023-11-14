@@ -5,6 +5,8 @@
     Gymnasium
     MatplotLib
     Numpy
+    Json
+    Collections
 
 # Other Installations
     C++ Build tools
