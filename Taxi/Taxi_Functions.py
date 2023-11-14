@@ -81,6 +81,7 @@ def average(lst):
     return sum(lst)/len(lst)
 
 
-
-
+def save_data(data, file_name):
+    with open(file_name+'.json', 'w') as f:
+        json.dump(data, f)
 
