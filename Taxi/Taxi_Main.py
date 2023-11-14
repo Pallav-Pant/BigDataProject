@@ -24,6 +24,9 @@ agent = tf.Taxi(
 )
 
 env = gym.wrappers.RecordEpisodeStatistics(env, deque_size=n_episodes)
+
+### Iterate over the episodes and trains the agent using functions from Taxi_Functions.py
+
 for episode in tqdm(range(n_episodes + 1)):
     obs, _ = env.reset()
     done = False

@@ -51,7 +51,10 @@ for x in generations:
     print(f'Generation: {x}\t Average Score: {generation_data[x]}\n')
 
 
-
+xlabel = 'Episode Ran'
+ylabel = 'Average Score'
+plt.xlabel(xlabel)
+plt.ylabel(ylabel)
 plt.plot(*zip(*sorted(generation_data.items())))
 plt.savefig('Taxi/Taxi_Runs_Data.png')
 plt.show()
